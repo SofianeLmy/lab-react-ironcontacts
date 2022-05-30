@@ -1,27 +1,55 @@
 import './App.css';
-import contact from './contacts.json';
+import contacts from './contacts.json';
 import { useState } from 'react';
 
+let contactArr = contacts.slice(0, 5);
+
 function App() {
-  const [contacts, setContacts] = useState(contact.slice(0, 5));
+  const [contactsValue, setContactsValue] = useState(contactArr);
 
-  const updatedContact = () => {
-    const newA = Math.floor(Math.random() * contact.length);
-    const updatedContact = [...contacts, contact[newA]];
+  const addRandomContact = () => {
+    const contactsCopy = [...contactsValue];
+    contactsCopy.push(
+      contacts[Math.floor(Math.random() * contacts.length) + 4]
+    );
+    setContactsValue(contactsCopy);
+  };
 
-    setContacts(updatedContact);
+  const sortName = () => {
+    const contactsCopy = [...contactsValue];
+    contactsCopy.sort((a, b) => a.name.localeCompare(b.name));
+    setContactsValue(contactsCopy);
+  };
+
+  const sortPopularity = () => {
+    const contactsCopy = [...contactsValue];
+    contactsCopy.sort((a, b) => b.popularity - a.popularity);
+    setContactsValue(contactsCopy);
+  };
+
+  const removeContact = (id) => {
+    const contactsCopy = [...contactsValue];
+    const updatedContacts = contactsCopy.filter((contact) => {
+      return contact.id !== id;
+    });
+    setContactsValue(updatedContacts);
   };
 
   return (
     <div className="App">
       <h1>IronContacts</h1>
-      <button>Add Random Contact</button>
+      <button onClick={() => addRandomContact()}>Add random contact</button>
+      <button onClick={() => sortName()}>Sort by Name</button>
+      <button onClick={() => sortPopularity()}>Sort by Popularity</button>
       <table>
         <th>Pictures</th>
         <th>Name</th>
         <th>Popularity</th>
+        <th>Won Oscar</th>
+        <th>Won Emmy</th>
       </table>
-      {contacts.map((contact) => {
+
+      {contactsValue.map((contact) => {
         return (
           <table>
             <tbody>
@@ -31,8 +59,12 @@ function App() {
                 </td>
                 <td>{contact.name}</td>
                 <td>{contact.popularity}</td>
-                <td>{contact.wonOscar ? 'yes' : 'no'}</td>
-                <td>{contact.wonEmmy ? 'yes' : 'no'}</td>
+                <td>{contact.wonOscar ? '🏆' : ''}</td>
+                <td>{contact.wonEmmy ? '🏆' : ''}</td>
+                <td>
+                  <button onClick={() => removeContact(contact.id)}>Remove</button>
+                </td>
+                {/* <td><button>Remove this contact</button></td> */}
               </tr>
             </tbody>
           </table>
